@@ -1,0 +1,55 @@
+substitutions:
+  _REGISTRY_FOLDER: 'thirdmind'
+  _REPO_NAME: 'open-webui'
+  _IMAGE_NAME: 'open-webui-image'
+  _SERVICE_NAME: 'open-webui-service'
+  _REGION: 'europe-west1'
+  _STORAGE_BUCKET: '${_SERVICE_NAME}-data'
+
+steps:
+# Set up buildx
+- name: 'gcr.io/cloud-builders/docker'
+  args: ['buildx', 'create', '--name', 'builder', '--use']
+
+# Build using buildx
+- name: 'gcr.io/cloud-builders/docker'
+  args:
+    - 'buildx'
+    - 'build'
+    - '--platform'
+    - 'linux/amd64'
+    - '-t'
+    - '${_REGION}-docker.pkg.dev/${_REGISTRY_FOLDER}/${_REPO_NAME}/${_IMAGE_NAME}:$SHORT_SHA'
+    - '--output'
+    - 'type=image,push=true'
+    - '--provenance=false'
+    - '.'
+
+# Create Cloud Storage bucket if it doesn't exist
+- name: 'gcr.io/cloud-builders/gcloud'
+  entrypoint: 'bash'
+  args:
+    - '-c'
+    - |
+      gcloud storage buckets create gs://${_STORAGE_BUCKET} || exit 0
+
+# Deploy to Cloud Run
+- name: 'gcr.io/cloud-builders/gcloud'
+  args: 
+    - 'run'
+    - 'deploy'
+    - '${_SERVICE_NAME}'
+    - '--image'
+    - '${_REGION}-docker.pkg.dev/${_REGISTRY_FOLDER}/${_REPO_NAME}/${_IMAGE_NAME}:$SHORT_SHA'
+    - '--region'
+    - '${_REGION}'
+    - '--allow-unauthenticated'
+    - '--mount'
+    - 'type=cloud-storage,bucket=${_STORAGE_BUCKET},path=/app/backend/data'
+    - '--service-account=1069598636139-compute@developer.gserviceaccount.com'
+
+images:
+- '${_REGION}-docker.pkg.dev/${_REGISTRY_FOLDER}/${_REPO_NAME}/${_IMAGE_NAME}:$SHORT_SHA'
+
+options:
+  logging: CLOUD_LOGGING_ONLY
