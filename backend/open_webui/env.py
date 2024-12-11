@@ -3,16 +3,16 @@ import json
 import logging
 import os
 import pkgutil
-import sys
-import shutil
-from uuid import uuid4
-from pathlib import Path
-from cryptography.hazmat.primitives import serialization
 import re
-
+import shutil
+import sys
+from pathlib import Path
+from uuid import uuid4
 
 import markdown
 from bs4 import BeautifulSoup
+from cryptography.hazmat.primitives import serialization
+
 from open_webui.constants import ERROR_MESSAGES
 
 ####################################
@@ -88,8 +88,8 @@ if "cuda_error" in locals():
 SRC_LOG_LEVELS = {}  # Legacy variable, do not remove
 
 WEBUI_NAME = os.environ.get("WEBUI_NAME", "Open WebUI")
-if WEBUI_NAME != "Open WebUI":
-    WEBUI_NAME += " (Open WebUI)"
+# if WEBUI_NAME != "Open WebUI":
+#    WEBUI_NAME += " (Open WebUI)"
 
 WEBUI_FAVICON_URL = "https://openwebui.com/favicon.png"
 
@@ -529,9 +529,7 @@ if LICENSE_PUBLIC_KEY:
 -----BEGIN PUBLIC KEY-----
 {LICENSE_PUBLIC_KEY}
 -----END PUBLIC KEY-----
-""".encode(
-            "utf-8"
-        )
+""".encode("utf-8")
     )
 
 
