@@ -30,8 +30,7 @@ jobs:
     steps:
       - name: Set repository and image name to lowercase
         run: |
-          IMAGE_NAME="${{ github.repository }}"
-          echo "FULL_IMAGE_NAME=${{ env.REGISTRY }}/${{ secrets.DOCKER_USERNAME }}/open-webui-${IMAGE_NAME,,}" >>${GITHUB_ENV}
+          echo "FULL_IMAGE_NAME=${{ env.REGISTRY }}/${{ secrets.DOCKER_USERNAME }}/open-webui" >>${GITHUB_ENV}
       - name: Checkout repository
         uses: actions/checkout@v4
       - name: Set up QEMU
@@ -103,8 +102,7 @@ jobs:
       # although the repository owner has a lowercase username, this prevents some people from running actions after forking
       - name: Set repository and image name to lowercase
         run: |
-          IMAGE_NAME="${{ github.repository }}"
-          echo "FULL_IMAGE_NAME=${{ env.REGISTRY }}/${{ secrets.DOCKER_USERNAME }}/open-webui-${IMAGE_NAME,,}" >>${GITHUB_ENV}
+          echo "FULL_IMAGE_NAME=${{ env.REGISTRY }}/${{ secrets.DOCKER_USERNAME }}/open-webui" >>${GITHUB_ENV}
 
       - name: Prepare
         run: |
@@ -306,8 +304,7 @@ jobs:
       # although the repository owner has a lowercase username, this prevents some people from running actions after forking
       - name: Set repository and image name to lowercase
         run: |
-          IMAGE_NAME="${{ github.repository }}"
-          echo "FULL_IMAGE_NAME=${{ env.REGISTRY }}/${{ secrets.DOCKER_USERNAME }}/open-webui-${IMAGE_NAME,,}" >>${GITHUB_ENV}
+          echo "FULL_IMAGE_NAME=${{ env.REGISTRY }}/${{ secrets.DOCKER_USERNAME }}/open-webui" >>${GITHUB_ENV}
 
       - name: Prepare
         run: |
@@ -395,8 +392,7 @@ jobs:
       # although the repository owner has a lowercase username, this prevents some people from running actions after forking
       - name: Set repository and image name to lowercase
         run: |
-          IMAGE_NAME="${{ github.repository }}"
-          echo "FULL_IMAGE_NAME=${{ env.REGISTRY }}/${{ secrets.DOCKER_USERNAME }}/open-webui-${IMAGE_NAME,,}" >>${GITHUB_ENV}
+          echo "FULL_IMAGE_NAME=${{ env.REGISTRY }}/${{ secrets.DOCKER_USERNAME }}/open-webui" >>${GITHUB_ENV}
 
       - name: Download digests
         uses: actions/download-artifact@v4
@@ -447,8 +443,7 @@ jobs:
       # although the repository owner has a lowercase username, this prevents some people from running actions after forking
       - name: Set repository and image name to lowercase
         run: |
-          IMAGE_NAME="${{ github.repository }}"
-          echo "FULL_IMAGE_NAME=${{ env.REGISTRY }}/${{ secrets.DOCKER_USERNAME }}/open-webui-${IMAGE_NAME,,}" >>${GITHUB_ENV}
+          echo "FULL_IMAGE_NAME=${{ env.REGISTRY }}/${{ secrets.DOCKER_USERNAME }}/open-webui" >>${GITHUB_ENV}
 
       - name: Download digests
         uses: actions/download-artifact@v4
@@ -557,8 +552,7 @@ jobs:
       # although the repository owner has a lowercase username, this prevents some people from running actions after forking
       - name: Set repository and image name to lowercase
         run: |
-          IMAGE_NAME="${{ github.repository }}"
-          echo "FULL_IMAGE_NAME=${{ env.REGISTRY }}/${{ secrets.DOCKER_USERNAME }}/open-webui-${IMAGE_NAME,,}" >>${GITHUB_ENV}
+          echo "FULL_IMAGE_NAME=${{ env.REGISTRY }}/${{ secrets.DOCKER_USERNAME }}/open-webui" >>${GITHUB_ENV}
 
       - name: Download digests
         uses: actions/download-artifact@v4
