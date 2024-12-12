@@ -55,8 +55,8 @@ jobs:
             type=sha,prefix=git-
             type=semver,pattern={{version}}
             type=semver,pattern={{major}}.{{minor}}
-            flavor: |
-              latest=${{ github.ref == 'refs/heads/main' }}
+          flavor: |
+            latest=true,onlatest=true
       - name: Build and Push Docker Image
         uses: docker/build-push-action@v5
         with:
@@ -103,10 +103,8 @@ jobs:
       # although the repository owner has a lowercase username, this prevents some people from running actions after forking
       - name: Set repository and image name to lowercase
         run: |
-          echo "IMAGE_NAME=${IMAGE_NAME,,}" >>${GITHUB_ENV}
-          echo "FULL_IMAGE_NAME=ghcr.io/${IMAGE_NAME,,}" >>${GITHUB_ENV}
-        env:
-          IMAGE_NAME: '${{ github.repository }}'
+          IMAGE_NAME="${{ github.repository }}"
+          echo "FULL_IMAGE_NAME=${{ env.REGISTRY }}/${{ secrets.DOCKER_USERNAME }}/open-webui-${IMAGE_NAME,,}" >>${GITHUB_ENV}
 
       - name: Prepare
         run: |
@@ -122,12 +120,12 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      - name: Log in to the Container registry
+      - name: Log in to Docker Hub
         uses: docker/login-action@v3
         with:
           registry: ${{ env.REGISTRY }}
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
 
       - name: Extract metadata for Docker images (cuda tag)
         id: meta
@@ -142,7 +140,7 @@ jobs:
             type=semver,pattern={{major}}.{{minor}}
             type=raw,enable=${{ github.ref == 'refs/heads/main' }},prefix=,suffix=,value=cuda
           flavor: |
-            latest=${{ github.ref == 'refs/heads/main' }}
+            latest=true,onlatest=true
             suffix=-cuda,onlatest=true
 
       - name: Extract metadata for Docker cache
@@ -308,10 +306,8 @@ jobs:
       # although the repository owner has a lowercase username, this prevents some people from running actions after forking
       - name: Set repository and image name to lowercase
         run: |
-          echo "IMAGE_NAME=${IMAGE_NAME,,}" >>${GITHUB_ENV}
-          echo "FULL_IMAGE_NAME=ghcr.io/${IMAGE_NAME,,}" >>${GITHUB_ENV}
-        env:
-          IMAGE_NAME: '${{ github.repository }}'
+          IMAGE_NAME="${{ github.repository }}"
+          echo "FULL_IMAGE_NAME=${{ env.REGISTRY }}/${{ secrets.DOCKER_USERNAME }}/open-webui-${IMAGE_NAME,,}" >>${GITHUB_ENV}
 
       - name: Prepare
         run: |
@@ -327,12 +323,12 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      - name: Log in to the Container registry
+      - name: Log in to Docker Hub
         uses: docker/login-action@v3
         with:
           registry: ${{ env.REGISTRY }}
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
 
       - name: Extract metadata for Docker images (ollama tag)
         id: meta
@@ -347,7 +343,7 @@ jobs:
             type=semver,pattern={{major}}.{{minor}}
             type=raw,enable=${{ github.ref == 'refs/heads/main' }},prefix=,suffix=,value=ollama
           flavor: |
-            latest=${{ github.ref == 'refs/heads/main' }}
+            latest=true,onlatest=true
             suffix=-ollama,onlatest=true
 
       - name: Extract metadata for Docker cache
@@ -399,10 +395,8 @@ jobs:
       # although the repository owner has a lowercase username, this prevents some people from running actions after forking
       - name: Set repository and image name to lowercase
         run: |
-          echo "IMAGE_NAME=${IMAGE_NAME,,}" >>${GITHUB_ENV}
-          echo "FULL_IMAGE_NAME=ghcr.io/${IMAGE_NAME,,}" >>${GITHUB_ENV}
-        env:
-          IMAGE_NAME: '${{ github.repository }}'
+          IMAGE_NAME="${{ github.repository }}"
+          echo "FULL_IMAGE_NAME=${{ env.REGISTRY }}/${{ secrets.DOCKER_USERNAME }}/open-webui-${IMAGE_NAME,,}" >>${GITHUB_ENV}
 
       - name: Download digests
         uses: actions/download-artifact@v4
@@ -414,12 +408,12 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      - name: Log in to the Container registry
+      - name: Log in to Docker Hub
         uses: docker/login-action@v3
         with:
           registry: ${{ env.REGISTRY }}
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
 
       - name: Extract metadata for Docker images (default latest tag)
         id: meta
@@ -433,7 +427,7 @@ jobs:
             type=semver,pattern={{version}}
             type=semver,pattern={{major}}.{{minor}}
           flavor: |
-            latest=${{ github.ref == 'refs/heads/main' }}
+            latest=true,onlatest=true
 
       - name: Create manifest list and push
         working-directory: /tmp/digests
@@ -453,10 +447,8 @@ jobs:
       # although the repository owner has a lowercase username, this prevents some people from running actions after forking
       - name: Set repository and image name to lowercase
         run: |
-          echo "IMAGE_NAME=${IMAGE_NAME,,}" >>${GITHUB_ENV}
-          echo "FULL_IMAGE_NAME=ghcr.io/${IMAGE_NAME,,}" >>${GITHUB_ENV}
-        env:
-          IMAGE_NAME: '${{ github.repository }}'
+          IMAGE_NAME="${{ github.repository }}"
+          echo "FULL_IMAGE_NAME=${{ env.REGISTRY }}/${{ secrets.DOCKER_USERNAME }}/open-webui-${IMAGE_NAME,,}" >>${GITHUB_ENV}
 
       - name: Download digests
         uses: actions/download-artifact@v4
@@ -468,12 +460,12 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      - name: Log in to the Container registry
+      - name: Log in to Docker Hub
         uses: docker/login-action@v3
         with:
           registry: ${{ env.REGISTRY }}
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
 
       - name: Extract metadata for Docker images (default latest tag)
         id: meta
@@ -488,7 +480,7 @@ jobs:
             type=semver,pattern={{major}}.{{minor}}
             type=raw,enable=${{ github.ref == 'refs/heads/main' }},prefix=,suffix=,value=cuda
           flavor: |
-            latest=${{ github.ref == 'refs/heads/main' }}
+            latest=true,onlatest=true
             suffix=-cuda,onlatest=true
 
       - name: Create manifest list and push
@@ -565,10 +557,8 @@ jobs:
       # although the repository owner has a lowercase username, this prevents some people from running actions after forking
       - name: Set repository and image name to lowercase
         run: |
-          echo "IMAGE_NAME=${IMAGE_NAME,,}" >>${GITHUB_ENV}
-          echo "FULL_IMAGE_NAME=ghcr.io/${IMAGE_NAME,,}" >>${GITHUB_ENV}
-        env:
-          IMAGE_NAME: '${{ github.repository }}'
+          IMAGE_NAME="${{ github.repository }}"
+          echo "FULL_IMAGE_NAME=${{ env.REGISTRY }}/${{ secrets.DOCKER_USERNAME }}/open-webui-${IMAGE_NAME,,}" >>${GITHUB_ENV}
 
       - name: Download digests
         uses: actions/download-artifact@v4
@@ -580,12 +570,12 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      - name: Log in to the Container registry
+      - name: Log in to Docker Hub
         uses: docker/login-action@v3
         with:
           registry: ${{ env.REGISTRY }}
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
 
       - name: Extract metadata for Docker images (default ollama tag)
         id: meta
@@ -600,7 +590,7 @@ jobs:
             type=semver,pattern={{major}}.{{minor}}
             type=raw,enable=${{ github.ref == 'refs/heads/main' }},prefix=,suffix=,value=ollama
           flavor: |
-            latest=${{ github.ref == 'refs/heads/main' }}
+            latest=true,onlatest=true
             suffix=-ollama,onlatest=true
 
       - name: Create manifest list and push
