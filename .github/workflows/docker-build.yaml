@@ -1,4 +1,4 @@
-name: Create and publish Docker images with specific build args
+name: Create and publish Docker images to Docker Hub
 
 on:
   workflow_dispatch:
@@ -10,7 +10,7 @@ on:
       - v*
 
 env:
-  REGISTRY: ghcr.io
+  REGISTRY: docker.io
 
 jobs:
   build-main-image:
@@ -24,39 +24,24 @@ jobs:
         platform:
           - linux/amd64
           - linux/arm64
-
     steps:
-      # GitHub Packages requires the entire repository name to be in lowercase
-      # although the repository owner has a lowercase username, this prevents some people from running actions after forking
       - name: Set repository and image name to lowercase
         run: |
-          echo "IMAGE_NAME=${IMAGE_NAME,,}" >>${GITHUB_ENV}
-          echo "FULL_IMAGE_NAME=ghcr.io/${IMAGE_NAME,,}" >>${GITHUB_ENV}
-        env:
-          IMAGE_NAME: '${{ github.repository }}'
-
-      - name: Prepare
-        run: |
-          platform=${{ matrix.platform }}
-          echo "PLATFORM_PAIR=${platform//\//-}" >> $GITHUB_ENV
-
+          IMAGE_NAME="${{ github.repository }}"
+          echo "FULL_IMAGE_NAME=${{ env.REGISTRY }}/${{ secrets.DOCKER_USERNAME }}/open-webui-${IMAGE_NAME,,}" >>${GITHUB_ENV}
       - name: Checkout repository
         uses: actions/checkout@v4
-
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
-
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
-
-      - name: Log in to the Container registry
+      - name: Log in to Docker Hub
         uses: docker/login-action@v3
         with:
           registry: ${{ env.REGISTRY }}
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Extract metadata for Docker images (default latest tag)
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+      - name: Extract metadata for Docker images
         id: meta
         uses: docker/metadata-action@v5
         with:
@@ -67,32 +52,18 @@ jobs:
             type=sha,prefix=git-
             type=semver,pattern={{version}}
             type=semver,pattern={{major}}.{{minor}}
-          flavor: |
-            latest=${{ github.ref == 'refs/heads/main' }}
-
-      - name: Extract metadata for Docker cache
-        id: cache-meta
-        uses: docker/metadata-action@v5
-        with:
-          images: ${{ env.FULL_IMAGE_NAME }}
-          tags: |
-            type=ref,event=branch
-            ${{ github.ref_type == 'tag' && 'type=raw,value=main' || '' }}
-          flavor: |
-            prefix=cache-${{ matrix.platform }}-
-            latest=false
-
-      - name: Build Docker image (latest)
+            flavor: |
+              latest=${{ github.ref == 'refs/heads/main' }}
+      - name: Build and Push Docker Image
         uses: docker/build-push-action@v5
-        id: build
         with:
           context: .
           push: true
           platforms: ${{ matrix.platform }}
+          tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
-          outputs: type=image,name=${{ env.FULL_IMAGE_NAME }},push-by-digest=true,name-canonical=true,push=true
-          cache-from: type=registry,ref=${{ steps.cache-meta.outputs.tags }}
-          cache-to: type=registry,ref=${{ steps.cache-meta.outputs.tags }},mode=max
+          cache-from: type=registry,ref=${{ env.FULL_IMAGE_NAME }}
+          cache-to: type=registry,ref=${{ env.FULL_IMAGE_NAME }},mode=max
           build-args: |
             BUILD_HASH=${{ github.sha }}
 
